@@ -25,7 +25,7 @@ pipeline {
                 -p 8085:80 \
                 --link backend1 \
                 --link backend2 \
-                -v $(pwd)/nginx/default.conf:/etc/nginx/nginx.conf \
+                -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf
                 nginx
                 '''
             }
