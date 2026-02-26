@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Build Backend Image') {
             steps {
                 sh 'docker build -t backend-app backend'
@@ -11,7 +12,7 @@ pipeline {
         stage('Run Backends') {
             steps {
                 sh '''
-                docker rm -f backend1 backend2 nginx || true
+                docker rm -f backend1 backend2 nginx 2>/dev/null || true
                 docker run -d --name backend1 backend-app
                 docker run -d --name backend2 backend-app
                 '''
@@ -25,7 +26,7 @@ pipeline {
                 -p 8085:80 \
                 --link backend1 \
                 --link backend2 \
-                -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf
+                -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf \
                 nginx
                 '''
             }
