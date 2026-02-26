@@ -9,25 +9,25 @@ pipeline {
             }
         }
 
-        stage('Run Backends') {
+        stage('Build NGINX Image') {
             steps {
-                sh '''
-                docker rm -f backend1 backend2 nginx 2>/dev/null || true
-                docker run -d --name backend1 backend-app
-                docker run -d --name backend2 backend-app
-                '''
+                sh 'docker build -t custom-nginx nginx'
             }
         }
 
-        stage('Run NGINX') {
+        stage('Run Containers') {
             steps {
                 sh '''
+                docker rm -f backend1 backend2 nginx 2>/dev/null || true
+
+                docker run -d --name backend1 backend-app
+                docker run -d --name backend2 backend-app
+
                 docker run -d --name nginx \
                 -p 8085:80 \
                 --link backend1 \
                 --link backend2 \
-                -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf \
-                nginx
+                custom-nginx
                 '''
             }
         }
